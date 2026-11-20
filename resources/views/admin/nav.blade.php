@@ -1,0 +1,2 @@
+<div class="admin-top"><a class="pill {{ request()->routeIs('admin.dashboard') ? 'on' : '' }}" href="{{ route('admin.dashboard') }}">Ringkasan</a>
+@foreach(['subjects' => 'Bidang', 'materials' => 'Materi', 'simulations' => 'Simulasi', 'parameters' => 'Parameter', 'questions' => 'Refleksi'] as $k => $l)<a class="pill {{ request()->route('res') === $k ? 'on' : '' }}" href="{{ route('admin.index', $k) }}">{{ $l }}</a>@endforeach</div>

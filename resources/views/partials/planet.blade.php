@@ -1,0 +1,4 @@
+<svg viewBox="0 0 220 160" width="{{ $w ?? 220 }}" aria-hidden="true"><defs><linearGradient id="pl{{ $id ?? 1 }}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3d9c4"/><stop offset="1" stop-color="#9c7bd8"/></linearGradient><clipPath id="cp{{ $id ?? 1 }}"><circle cx="110" cy="80" r="46"/></clipPath></defs>
+<ellipse cx="110" cy="84" rx="100" ry="24" transform="rotate(-16 110 84)" fill="none" stroke="#c9bcff" stroke-width="7" opacity=".7"/>
+<circle cx="110" cy="80" r="46" fill="url(#pl{{ $id ?? 1 }})"/><g clip-path="url(#cp{{ $id ?? 1 }})" opacity=".35"><rect x="50" y="62" width="130" height="8" fill="#fff"/><rect x="50" y="86" width="130" height="12" fill="#7a5cc9"/></g>
+<path d="M12 104C60 128 170 112 206 60" fill="none" stroke="#c9bcff" stroke-width="7" stroke-linecap="round"/></svg>
