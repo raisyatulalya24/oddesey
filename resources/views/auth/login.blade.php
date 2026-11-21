@@ -13,12 +13,7 @@
       <div class="fld"><input id="pw" type="password" name="password" placeholder="Password" aria-label="Password" required></div>
       <div class="meta"><label><input type="checkbox" name="remember"> Remember Me</label><span>Forgot Password?</span></div>
       <button class="btn full">Masuk</button>
-      <div class="or">atau</div>
-      <div class="soc">
-        @if($social['google'] ?? false)<a class="sbtn" href="{{ route('social.redirect', 'google') }}"><b style="font-size:18px;color:#4285F4">G</b> Login dengan Google</a>
-        @else<button type="button" class="sbtn off" disabled title="Belum dikonfigurasi (isi GOOGLE_CLIENT_ID di .env)"><b style="font-size:18px;color:#4285F4">G</b> Google</button>@endif
-      </div>
-      <p class="alt">Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></p>
+      <p class="alt"><a href="{{ route('privacy') }}" style="font-weight:500;color:var(--gray)">Kebijakan Privasi</a><br>Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></p>
     </form>
   </div>
   <div class="panel" style="background-image:url('{{ asset('img/auth-login.png') }}')">

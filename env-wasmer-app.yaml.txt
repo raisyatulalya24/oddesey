@@ -1,0 +1,15 @@
+# Tambahkan blok ini ke app.yaml (dibuat otomatis oleh "wasmer deploy"), di bawah baris "package: ."
+capabilities:
+  database:
+    engine: mysql
+env:
+  APP_NAME: Oddesey
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_URL: https://ISI-ALAMAT-WASMER-KAMU
+  LOG_CHANNEL: stderr
+  SESSION_DRIVER: database
+  CACHE_STORE: database
+  CONTACT_EMAIL: emailkamu@gmail.com
+# Rahasia (APP_KEY) JANGAN ditulis di sini. Pakai:
+#   wasmer app secrets create APP_KEY "base64:..."

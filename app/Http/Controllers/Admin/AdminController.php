@@ -10,7 +10,7 @@ class AdminController extends Controller
 {
     private function cfg(string $res): array
     {
-        $types = ['projectile' => 'Gerak Parabola', 'reaction' => 'Laju Reaksi', 'orbit' => 'Orbit Planet', 'photosynthesis' => 'Fotosintesis', 'wave' => 'Gelombang'];
+        $types = config('oddesey.sim_types');
         $all = [
             'subjects' => ['m' => Subject::class, 'title' => 'Bidang Ilmu', 'slug' => 'name', 'cols' => ['name', 'icon', 'is_active'],
                 'f' => ['name' => 'text', 'description' => 'textarea', 'icon' => ['leaf' => 'Daun', 'atom' => 'Atom', 'flask' => 'Labu', 'planet' => 'Planet', 'calc' => 'Kalkulator'], 'is_active' => 'bool']],

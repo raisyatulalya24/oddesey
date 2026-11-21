@@ -11,7 +11,7 @@
     <svg viewBox="0 0 520 90" width="100%" aria-hidden="true"><path class="draw" d="M0 45 Q 32 0 65 45 T 130 45 T 195 45 T 260 45 T 325 45 T 390 45 T 455 45 T 520 45" fill="none" stroke="url(#gP)" stroke-width="4" stroke-linecap="round"/></svg>
   </article>
   <aside class="card" style="align-self:start"><h3>Aksi</h3><div class="grid" style="margin-top:.8rem;gap:.7rem">
-    @if($material->simulation)<a class="btn navy" href="{{ route('simulations.show', $material->simulation) }}">🧪 Menuju Simulation Lab</a>@endif
+    @foreach($material->simulations->where('is_active', true) as $s)<a class="btn navy" href="{{ route('simulations.show', $s) }}">🧪 {{ $s->title }}</a>@endforeach
     @auth
       @unless($material->simulation)
         @if($done)<span class="chip" style="text-align:center">✓ Materi selesai</span>

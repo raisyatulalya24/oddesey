@@ -46,5 +46,5 @@
   @if(file_exists(public_path('img/about.png')))<img src="{{ asset('img/about.png') }}" alt="Observatorium di atas awan" class="float">
   @else<svg viewBox="0 0 420 240" aria-hidden="true"><ellipse cx="210" cy="220" rx="200" ry="26" fill="#d9d2fb"/><rect x="130" y="110" width="160" height="106" rx="10" fill="#f3f0ff" stroke="#c9c0fa" stroke-width="3"/><path d="M120 112a90 70 0 01180 0z" fill="url(#gP)"/></svg>@endif
 </section>
-<footer class="foot"><b>Oddesey</b><span>© {{ date('Y') }} Oddesey. All rights reserved.</span><a href="{{ route('home') }}">Home</a></footer>
+<footer class="foot"><b>Oddesey</b><span>© {{ date('Y') }} Oddesey. All rights reserved.</span><span><a href="{{ route('privacy') }}">Privasi</a> &nbsp; <a href="{{ route('home') }}">Home</a></span></footer>
 @endsection

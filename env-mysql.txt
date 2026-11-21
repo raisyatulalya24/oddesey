@@ -6,6 +6,3 @@ DB_DATABASE=oddesey
 DB_USERNAME=root
 DB_PASSWORD=
 
-# (Opsional) Login Google. Kosongkan jika belum dipakai.
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=

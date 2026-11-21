@@ -1,12 +1,11 @@
 <?php
-use App\Http\Controllers\{TrackController, AuthController, DashboardController, ExperimentController, HomeController, MaterialController, ProfileController, ProgressController, SimulationController, SocialAuthController};
+use App\Http\Controllers\{TrackController, AuthController, DashboardController, ExperimentController, HomeController, MaterialController, ProfileController, ProgressController, SimulationController};
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'landing'])->name('home');
+Route::view('/privacy', 'privacy')->name('privacy');
 
-Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])->where('provider', 'google')->name('social.redirect');
-Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->where('provider', 'google')->name('social.callback');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

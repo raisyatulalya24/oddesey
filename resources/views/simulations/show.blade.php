@@ -34,5 +34,6 @@
 @endsection
 @push('scripts')
 <script>window.SIM = @json(['type' => $sim->type]);</script>
+<script src="{{ asset('js/sims-extra.js') }}"></script>
 <script src="{{ asset('js/sim.js') }}"></script>
 @endpush

@@ -1,0 +1,19 @@
+# Salin ke file bernama .env.production (file ini otomatis tidak ikut ke GitHub).
+# Dipakai HANYA di komputermu untuk menjalankan migrasi ke database Wasmer:
+#   php artisan migrate --force --seed --env=production
+APP_NAME=Oddesey
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=ISI_DENGAN_HASIL: php artisan key:generate --show
+APP_URL=https://ISI-ALAMAT-WASMER-KAMU
+
+DB_CONNECTION=mysql
+DB_HOST=ISI_DARI wasmer app database list --with-password
+DB_PORT=ISI
+DB_DATABASE=ISI (kolom Name)
+DB_USERNAME=ISI
+DB_PASSWORD=ISI
+
+# Akun admin pertama di situs publik (ganti dengan milikmu, password harus kuat)
+ADMIN_EMAIL=emailkamu@gmail.com
+ADMIN_PASSWORD=GantiDenganPasswordKuat123!

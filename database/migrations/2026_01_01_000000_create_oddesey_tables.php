@@ -6,12 +6,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $t) {
-            $t->string('role')->default('student');
-            $t->string('provider')->nullable();      // google | microsoft (login sosial)
-            $t->string('provider_id')->nullable();
-            $t->string('password')->nullable()->change();
-        });
+        Schema::table('users', fn (Blueprint $t) => $t->string('role')->default('student'));
         Schema::create('subjects', function (Blueprint $t) {
             $t->id(); $t->string('name'); $t->string('slug')->unique(); $t->text('description')->nullable();
             $t->string('icon')->nullable(); $t->boolean('is_active')->default(true); $t->timestamps();
@@ -54,6 +49,6 @@ return new class extends Migration {
     public function down(): void
     {
         foreach (['learning_histories','bookmarks','reflection_answers','experiments','reflection_questions','simulation_parameters','simulations','materials','subjects'] as $t) Schema::dropIfExists($t);
-        Schema::table('users', fn (Blueprint $t) => $t->dropColumn(['role', 'provider', 'provider_id']));
+        Schema::table('users', fn (Blueprint $t) => $t->dropColumn('role'));
     }
 };

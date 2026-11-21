@@ -8,8 +8,15 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create(['name' => 'Admin Oddesey', 'email' => 'admin@oddesey.test', 'password' => 'password', 'role' => 'admin']);
-        User::create(['name' => 'Siswa Demo', 'email' => 'siswa@oddesey.test', 'password' => 'password', 'role' => 'student']);
+        if (app()->environment('production')) {
+            // Di situs publik JANGAN membuat akun demo berpassword 'password'. Admin dibuat dari ADMIN_EMAIL / ADMIN_PASSWORD.
+            if (env('ADMIN_EMAIL') && env('ADMIN_PASSWORD')) {
+                User::create(['name' => 'Admin Oddesey', 'email' => env('ADMIN_EMAIL'), 'password' => env('ADMIN_PASSWORD'), 'role' => 'admin']);
+            }
+        } else {
+            User::create(['name' => 'Admin Oddesey', 'email' => 'admin@oddesey.test', 'password' => 'password', 'role' => 'admin']);
+            User::create(['name' => 'Siswa Demo', 'email' => 'siswa@oddesey.test', 'password' => 'password', 'role' => 'student']);
+        }
 
         $subjects = [];
         foreach ([['Biologi', 'leaf', 'Eksplorasi makhluk hidup, ekosistem, dan keajaiban sel.'], ['Fisika', 'atom', 'Hukum alam semesta, energi, dan rahasia gerak.'],
@@ -95,6 +102,120 @@ class DatabaseSeeder extends Seeder
             $sim = $m->simulations()->create(['title' => "Simulasi $title", 'type' => $type, 'description' => "Atur parameter lalu jalankan simulasi $title."]);
             foreach ($params as [$n, $l, $u, $min, $max, $def, $st]) $sim->parameters()->create(['name' => $n, 'label' => $l, 'unit' => $u, 'min_value' => $min, 'max_value' => $max, 'default_value' => $def, 'step' => $st]);
             foreach ($qs as $i => $q) $sim->questions()->create(['question' => $q, 'sort_order' => $i + 1]);
+        }
+        // ---- 50 simulasi tambahan: [tipe, judul, deskripsi, [parameter nama|label|satuan|min|max|bawaan|langkah], pertanyaan refleksi] ----
+        $extra = [
+            'Fotosintesis' => [
+                ['transp', 'Transpirasi Daun', 'Atur suhu, kelembapan, dan angin untuk melihat laju penguapan air lewat stomata.', ['temp|Suhu|°C|10|45|28|1', 'humidity|Kelembapan Udara|%|10|100|60|5', 'wind|Kecepatan Angin|m/s|0|20|3|1'], 'Mengapa tumbuhan di daerah panas dan kering menutup stomata pada siang hari?'],
+                ['enzyme', 'Aktivitas Enzim', 'Cari suhu dan pH optimum tempat enzim bekerja paling baik.', ['temp|Suhu|°C|0|80|37|1', 'ph|pH||1|13|7|0.5'], 'Apa yang terjadi pada aktivitas enzim saat suhu jauh di atas optimum, dan mengapa?'],
+            ],
+            'Mitokondria dan Energi Sel' => [
+                ['respiration', 'Respirasi dan Detak Jantung', 'Lihat bagaimana intensitas olahraga menaikkan kebutuhan energi tubuh.', ['intensity|Intensitas Olahraga|/10|1|10|3|1', 'age|Usia|tahun|15|60|20|1'], 'Mengapa detak jantung dan laju napas naik saat berolahraga? Kaitkan dengan ATP.'],
+            ],
+            'Struktur dan Fungsi Sel' => [
+                ['osmosis', 'Osmosis pada Sel', 'Ubah konsentrasi larutan di luar sel dan amati air masuk atau keluar.', ['ext|Konsentrasi Larutan Luar|%|0.1|2|0.9|0.1'], 'Apa yang terjadi pada sel hewan jika ditaruh di air tawar? Jelaskan arah perpindahan air.'],
+                ['cell', 'Rasio Luas Permukaan terhadap Volume', 'Bandingkan sel kecil dan besar untuk memahami mengapa sel berukuran mikroskopis.', ['r|Jari-jari Sel|µm|1|50|10|1'], 'Mengapa sel yang terlalu besar sulit memenuhi kebutuhannya?'],
+            ],
+            'DNA dan Pewarisan Sifat' => [
+                ['dna', 'Heliks DNA dan Suhu Leleh', 'Atur panjang DNA dan kandungan G–C untuk melihat suhu lelehnya.', ['len|Panjang DNA|bp|20|200|50|5', 'gc|Kandungan G–C|%|20|80|50|5'], 'Mengapa DNA dengan lebih banyak pasangan G–C lebih sulit dipisahkan?'],
+                ['hardy', 'Hardy-Weinberg', 'Hitung proporsi genotipe dalam populasi dari frekuensi alel.', ['p|Frekuensi Alel A (p)||0.05|0.95|0.5|0.05'], 'Jika p = 0,5, berapa persen populasi yang heterozigot? Mengapa nilainya maksimum di sana?'],
+            ],
+            'Ekosistem dan Rantai Makanan' => [
+                ['logistic', 'Pertumbuhan Populasi', 'Amati populasi tumbuh cepat lalu melambat saat mendekati daya dukung.', ['r|Laju Pertumbuhan||0.1|1|0.4|0.05', 'K|Daya Dukung|ekor|100|1000|500|50', 'N0|Populasi Awal|ekor|10|100|20|5'], 'Mengapa pertumbuhan populasi melambat ketika mendekati daya dukung lingkungan?'],
+                ['food', 'Aliran Energi Rantai Makanan', 'Lihat berapa energi yang tersisa di setiap tingkat trofik.', ['energy|Energi Produsen|kJ|1000|20000|10000|500', 'eff|Efisiensi Transfer|%|5|20|10|1'], 'Mengapa rantai makanan jarang lebih dari lima tingkat?'],
+                ['predprey', 'Predator dan Mangsa', 'Amati populasi mangsa dan predator naik turun bergantian.', ['a|Laju Pertumbuhan Mangsa||0.4|1.2|0.8|0.05', 'b|Laju Pemangsaan||0.01|0.05|0.03|0.005', 'd|Kematian Predator||0.3|1|0.6|0.05'], 'Mengapa puncak populasi predator selalu muncul setelah puncak populasi mangsa?'],
+            ],
+            'Gerak dan Gaya' => [
+                ['freefall', 'Jatuh Bebas', 'Jatuhkan benda dari berbagai ketinggian dan gravitasi.', ['h|Ketinggian|m|5|100|20|5', 'g|Gravitasi|m/s²|1.6|25|9.8|0.1'], 'Jika gravitasi diperkecil seperti di Bulan, bagaimana waktu jatuhnya berubah?'],
+                ['circular', 'Gerak Melingkar', 'Ubah jari-jari dan kecepatan untuk melihat gaya sentripetal.', ['r|Jari-jari|m|0.5|5|2|0.5', 'v|Kecepatan|m/s|1|20|6|1', 'm|Massa|kg|0.1|5|1|0.1'], 'Apa yang terjadi pada gaya sentripetal jika kecepatan digandakan?'],
+            ],
+            'Gelombang dan Frekuensi' => [
+                ['pendulum', 'Bandul Sederhana', 'Cari tahu faktor yang memengaruhi periode ayunan bandul.', ['L|Panjang Tali|m|0.2|3|1|0.1', 'g|Gravitasi|m/s²|1.6|25|9.8|0.1', 'a0|Sudut Awal|°|5|40|20|1'], 'Apakah massa bandul memengaruhi periodenya? Faktor apa yang berpengaruh?'],
+                ['spring', 'Pegas dan Hukum Hooke', 'Ubah kekakuan pegas dan massa untuk melihat getarannya.', ['k|Konstanta Pegas|N/m|10|200|50|5', 'm|Massa|kg|0.1|5|1|0.1', 'A|Amplitudo|m|0.05|0.5|0.3|0.05'], 'Bagaimana periode berubah jika pegas dibuat lebih kaku?'],
+                ['refraction', 'Pembiasan Cahaya', 'Amati arah cahaya saat berpindah antar dua medium.', ['n1|Indeks Bias Medium 1||1|2.5|1|0.05', 'n2|Indeks Bias Medium 2||1|2.5|1.5|0.05', 'theta1|Sudut Datang|°|0|85|40|1'], 'Kapan cahaya dibelokkan mendekati garis normal, dan kapan terjadi pemantulan sempurna?'],
+            ],
+            'Hukum Newton' => [
+                ['incline', 'Bidang Miring', 'Kapan benda meluncur? Atur sudut, massa, dan gesekan.', ['angle|Sudut Bidang|°|5|60|30|1', 'mass|Massa|kg|1|20|5|1', 'mu|Koefisien Gesek||0|0.8|0.2|0.05'], 'Apakah massa benda memengaruhi percepatan di bidang miring tanpa gesekan?'],
+                ['collision', 'Tumbukan Dua Benda', 'Bandingkan tumbukan lenting dan tidak lenting.', ['m1|Massa Benda 1|kg|1|10|4|1', 'm2|Massa Benda 2|kg|1|10|2|1', 'v1|Kecepatan Awal Benda 1|m/s|1|10|5|1', 'e|Koefisien Restitusi||0|1|1|0.1'], 'Mengapa energi kinetik berkurang pada tumbukan tidak lenting sempurna?'],
+                ['buoyancy', 'Gaya Apung', 'Tentukan benda mengapung, melayang, atau tenggelam.', ['rhob|Massa Jenis Benda|kg/m³|200|2000|700|50', 'rhof|Massa Jenis Fluida|kg/m³|800|1300|1000|50'], 'Bagaimana kapal baja yang sangat berat bisa mengapung?'],
+            ],
+            'Energi dan Usaha' => [
+                ['gas', 'Gas Ideal', 'Hubungkan suhu, volume, dan tekanan gas melalui gerak partikelnya.', ['T|Suhu|K|200|600|300|10', 'V|Volume|L|1|10|5|1', 'n|Jumlah Gas|mol|0.1|2|1|0.1'], 'Apa yang terjadi pada tekanan jika volume dikecilkan pada suhu tetap?'],
+            ],
+            'Listrik Dasar' => [
+                ['ohm', 'Rangkaian Seri dan Hukum Ohm', 'Hitung arus dan tegangan pada dua hambatan yang disusun seri.', ['V|Tegangan Baterai|V|1|24|12|1', 'R1|Hambatan R1|Ω|1|100|20|1', 'R2|Hambatan R2|Ω|1|100|40|1'], 'Apa yang terjadi pada arus jika hambatan kedua diperbesar?'],
+            ],
+            'Laju Reaksi' => [
+                ['equilibrium', 'Kesetimbangan Kimia', 'Geser kesetimbangan N₂O₄ ⇌ 2 NO₂ dengan suhu dan tekanan.', ['T|Suhu|K|250|400|298|2', 'P|Tekanan|atm|0.5|5|1|0.5'], 'Ke arah mana kesetimbangan bergeser saat tekanan dinaikkan? Jelaskan dengan asas Le Chatelier.'],
+                ['calorimetry', 'Kalorimetri', 'Masukkan logam panas ke air dan hitung suhu akhirnya.', ['m|Massa Logam|g|10|200|50|10', 'c|Kalor Jenis Logam|J/g°C|0.1|0.9|0.4|0.05', 'Tm|Suhu Awal Logam|°C|50|200|100|10'], 'Mengapa suhu akhir campuran selalu berada di antara suhu awal air dan logam?'],
+            ],
+            'Struktur Atom' => [
+                ['decay', 'Peluruhan Radioaktif', 'Amati inti atom meluruh menurut waktu paruhnya.', ['half|Waktu Paruh|hari|1|50|10|1', 'N0|Jumlah Inti Awal||100|1000|1000|100', 't|Waktu|hari|0|200|30|1'], 'Berapa persen inti tersisa setelah tiga kali waktu paruh?'],
+            ],
+            'Tabel Periodik' => [
+                ['config', 'Konfigurasi Elektron', 'Lihat susunan elektron pada kulit atom untuk nomor atom 1 sampai 36.', ['Z|Nomor Atom||1|36|11|1'], 'Bagaimana jumlah elektron kulit terluar menjelaskan kemiripan unsur satu golongan?'],
+            ],
+            'Ikatan Kimia' => [
+                ['stoich', 'Pereaksi Pembatas', 'Tentukan pereaksi yang habis lebih dulu pada pembentukan air.', ['nh|Mol H₂|mol|0.5|10|4|0.5', 'no|Mol O₂|mol|0.5|10|1|0.5'], 'Mengapa jumlah produk ditentukan oleh pereaksi pembatas?'],
+                ['solubility', 'Kelarutan terhadap Suhu', 'Lihat berapa banyak KNO₃ yang bisa larut pada berbagai suhu.', ['T|Suhu|°C|0|100|40|5', 'mass|Massa KNO₃ per 100 g air|g|10|250|60|10'], 'Bagaimana kamu membuat larutan jenuh KNO₃ mengendap kembali?'],
+                ['electro', 'Sel Volta', 'Bandingkan dua elektroda dan lihat potensial sel yang dihasilkan.', ['e1|E° Elektroda A|V|-2.5|1.2|-0.76|0.02', 'e2|E° Elektroda B|V|-2.5|1.2|0.34|0.02'], 'Elektroda mana yang menjadi anode, dan ke mana elektron mengalir?'],
+            ],
+            'Asam dan Basa' => [
+                ['ph', 'Skala pH', 'Geser pH dan lihat perubahan warna indikator serta konsentrasi ion.', ['ph|pH||0|14|7|0.5'], 'Berapa kali lebih asam larutan pH 3 dibanding pH 5?'],
+                ['titration', 'Titrasi Asam-Basa', 'Teteskan NaOH ke HCl dan temukan titik ekuivalen.', ['Ma|Molaritas HCl|M|0.05|0.5|0.1|0.05', 'Mb|Molaritas NaOH|M|0.05|0.5|0.1|0.05', 'Vb|Volume NaOH Ditambahkan|mL|0|60|10|1'], 'Mengapa pH berubah sangat tajam di sekitar titik ekuivalen?'],
+                ['molarity', 'Molaritas Larutan', 'Hitung konsentrasi larutan dari massa, Mr, dan volume.', ['g|Massa Zat Terlarut|g|1|50|10|1', 'Mr|Massa Molekul Relatif (Mr)||18|180|58.5|0.5', 'V|Volume Larutan|mL|50|1000|500|50'], 'Apa yang terjadi pada molaritas jika volume larutan digandakan?'],
+            ],
+            'Orbit Planet' => [
+                ['kepler2', 'Hukum Kepler II', 'Orbit lonjong: planet bergerak lebih cepat saat dekat bintang.', ['e|Eksentrisitas||0|0.8|0.5|0.05', 'a|Sumbu Semi-mayor|AU|0.5|5|1|0.1'], 'Di titik mana planet bergerak paling cepat, dan mengapa?'],
+                ['escape', 'Kecepatan Lepas', 'Berapa cepat roket harus melaju agar lolos dari gravitasi planet?', ['mass|Massa Planet|M⊕|0.1|300|1|0.1', 'rad|Jari-jari Planet|R⊕|0.3|12|1|0.1'], 'Mengapa Jupiter jauh lebih sulit ditinggalkan dibanding Bumi?'],
+            ],
+            'Tata Surya' => [
+                ['gravity', 'Berat di Planet Lain', 'Bandingkan beratmu di planet-planet Tata Surya.', ['mass|Massa Tubuhmu|kg|10|100|50|5', 'planet|Planet (1=Merkurius ... 8=Neptunus)||1|8|3|1'], 'Apa perbedaan massa dan berat? Mana yang berubah saat berpindah planet?'],
+                ['lightt', 'Perjalanan Cahaya', 'Hitung lama cahaya dan pesawat menempuh jarak antar benda langit.', ['obj|Objek (1=Bulan 2=Mars 3=Matahari 4=Jupiter 5=Saturnus 6=Neptunus)||1|6|3|1', 'frac|Kecepatan Pesawat (× c)||0.01|1|0.1|0.01'], 'Mengapa kita melihat Matahari sebagaimana keadaannya sekitar 8 menit lalu?'],
+            ],
+            'Bintang dan Siklus Hidupnya' => [
+                ['star', 'Kecerahan Bintang', 'Hubungkan magnitudo mutlak, jarak, dan kecerahan semu.', ['M|Magnitudo Mutlak||-5|15|4.8|0.1', 'd|Jarak|pc|1|1000|10|1'], 'Mengapa bintang yang sangat terang bisa tampak redup dari Bumi?'],
+            ],
+            'Gerhana dan Fase Bulan' => [
+                ['phases', 'Fase Bulan', 'Geser posisi Bulan di orbitnya dan lihat bentuk yang tampak dari Bumi.', ['angle|Posisi Bulan di Orbit|°|0|360|90|5'], 'Mengapa Bulan tampak berubah bentuk padahal selalu setengah bagiannya diterangi Matahari?'],
+                ['tides', 'Pasang Surut', 'Gabungan tarikan Bulan dan Matahari menentukan tinggi pasang.', ['ang|Sudut Bulan–Matahari|°|0|360|0|15', 'dist|Jarak Bulan|% dari rata-rata|90|110|100|1'], 'Kapan terjadi pasang purnama dan pasang perbani? Apa penyebabnya?'],
+                ['season', 'Panjang Siang dan Musim', 'Lihat pengaruh kemiringan sumbu Bumi pada lamanya siang sepanjang tahun.', ['tilt|Kemiringan Sumbu Bumi|°|0|40|23.4|0.1', 'day|Hari ke-|hari|1|365|172|1', 'lat|Lintang|°|-60|60|0|5'], 'Mengapa panjang siang hampir tidak berubah di khatulistiwa?'],
+            ],
+            'Galaksi dan Alam Semesta' => [
+                ['hubble', 'Hukum Hubble', 'Semakin jauh galaksi, semakin cepat ia menjauh.', ['d|Jarak Galaksi|Mpc|10|1000|100|10', 'H0|Konstanta Hubble|km/s/Mpc|60|80|70|1'], 'Apa arti galaksi-galaksi yang menjauh bagi perkembangan alam semesta?'],
+                ['telescope', 'Teleskop Bias', 'Hitung perbesaran, daya pisah, dan pengumpulan cahaya teleskop.', ['fo|Panjang Fokus Objektif|mm|500|2000|1000|50', 'fe|Panjang Fokus Okuler|mm|5|40|10|1', 'D|Diameter Objektif|mm|50|300|100|10'], 'Mengapa diameter lensa objektif lebih penting daripada perbesaran untuk melihat objek redup?'],
+            ],
+            'Fungsi Sinus' => [
+                ['trig', 'Lingkaran Satuan', 'Hubungkan sudut pada lingkaran satuan dengan grafik sinus.', ['angle|Sudut|°|0|360|45|5'], 'Pada sudut berapa sin bernilai maksimum, dan berapa nilainya?'],
+                ['riemann', 'Luas di Bawah Kurva', 'Hampiri luas di bawah y = x² dengan persegi panjang.', ['n|Jumlah Subinterval||2|100|10|1', 'b|Batas Atas Integral||1|5|4|0.5'], 'Apa yang terjadi pada galat jika jumlah persegi panjang diperbanyak?'],
+            ],
+            'Aljabar Dasar' => [
+                ['linear', 'Garis Lurus', 'Pahami gradien dan titik potong dari persamaan garis.', ['m|Gradien (m)||-5|5|1|0.5', 'c|Konstanta (c)||-5|5|0|0.5'], 'Apa arti gradien negatif pada grafik garis?'],
+                ['quad', 'Fungsi Kuadrat', 'Lihat bentuk parabola, titik puncak, dan akar-akarnya.', ['a|a||-3|3|1|0.1', 'b|b||-6|6|0|0.5', 'c|c||-6|6|-3|0.5'], 'Bagaimana tanda a menentukan arah buka parabola, dan apa arti diskriminan negatif?'],
+                ['expo', 'Eksponen dan Logaritma', 'Bandingkan fungsi eksponen dengan inversnya, logaritma.', ['a|Basis (a)||1.2|4|2|0.1', 'x|Nilai x||-2|3|1|0.5'], 'Mengapa grafik eksponen dan logaritma saling mencerminkan terhadap garis y = x?'],
+                ['seq', 'Barisan Aritmetika', 'Hitung suku ke-n dan jumlah n suku pertama.', ['a1|Suku Pertama||1|20|2|1', 'd|Beda||0|10|3|1', 'n|Banyak Suku||2|30|10|1'], 'Bagaimana kamu menemukan suku ke-100 tanpa menuliskan semua suku?'],
+            ],
+            'Geometri Bangun Datar' => [
+                ['pytha', 'Teorema Pythagoras', 'Lihat luas persegi pada sisi-sisi segitiga siku-siku.', ['a|Sisi Tegak a||1|12|3|1', 'b|Sisi Tegak b||1|12|4|1'], 'Bagaimana luas persegi pada sisi miring berhubungan dengan dua persegi lainnya?'],
+                ['transform', 'Transformasi Geometri', 'Geser, putar, dan skalakan segitiga pada bidang koordinat.', ['tx|Translasi x||-5|5|2|1', 'ty|Translasi y||-5|5|1|1', 'rot|Rotasi|°|0|360|30|15', 'k|Skala||0.5|2|1|0.1'], 'Transformasi mana yang mengubah ukuran bangun dan mana yang tidak?'],
+            ],
+            'Statistika Dasar' => [
+                ['normal', 'Distribusi Normal', 'Lihat sebaran data berbentuk lonceng dan peluang dalam ± k simpangan baku.', ['mu|Rata-rata (μ)||40|80|60|1', 'sigma|Simpangan Baku (σ)||2|20|8|1', 'k|Rentang (± k σ)||1|3|1|0.5'], 'Berapa persen data berada dalam satu simpangan baku dari rata-rata?'],
+            ],
+            'Peluang' => [
+                ['prob', 'Percobaan Peluang', 'Lempar koin berulang dan lihat frekuensi relatif mendekati peluang teoretis.', ['n|Jumlah Percobaan||10|2000|100|10', 'p|Peluang Sukses||0.1|0.9|0.5|0.05'], 'Mengapa hasil percobaan semakin mendekati peluang teoretis jika percobaan diperbanyak?'],
+            ],
+        ];
+        foreach ($extra as $materialTitle => $sims) {
+            $m = \App\Models\Material::where('title', $materialTitle)->firstOrFail();
+            foreach ($sims as [$type, $title, $desc, $params, $question]) {
+                $sim = $m->simulations()->create(['title' => $title, 'type' => $type, 'description' => $desc]);
+                foreach ($params as $row) {
+                    [$n, $l, $u, $min, $max, $def, $st] = explode('|', $row);
+                    $sim->parameters()->create(['name' => $n, 'label' => $l, 'unit' => $u, 'min_value' => $min, 'max_value' => $max, 'default_value' => $def, 'step' => $st]);
+                }
+                $sim->questions()->create(['question' => $question, 'sort_order' => 1]);
+            }
         }
     }
 }

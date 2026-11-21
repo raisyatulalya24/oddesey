@@ -3,7 +3,7 @@
   const cv = document.getElementById('cv'), c = cv.getContext('2d'), W = cv.width, H = cv.height, $ = s => document.querySelector(s);
   const inputs = [...document.querySelectorAll('[data-p]')];
   const P = () => Object.fromEntries(inputs.map(i => [i.dataset.p, +i.value]));
-  const fmt = v => (Math.round(v * 100) / 100);
+  const fmt = v => typeof v !== 'number' ? v : (Math.abs(v) < .1 && v !== 0 ? +v.toPrecision(2) : Math.round(v * 100) / 100);
   const bg = () => {
     const g = c.createRadialGradient(W * .7, 0, 20, W / 2, H / 2, W * .8); g.addColorStop(0, 'rgba(58,51,153,.82)'); g.addColorStop(1, 'rgba(11,20,55,.9)');
     c.fillStyle = g; c.fillRect(0, 0, W, H); c.fillStyle = '#fff';
@@ -67,6 +67,7 @@
       }
     }
   };
+  Object.assign(T, typeof window.SIMX === 'function' ? window.SIMX({ c, W, H }) : {});
   const sim = T[window.SIM.type] || T.wave;
   let run = false, t0 = 0, result = null;
   const frame = now => { bg(); sim.draw(P(), run ? Math.min(1, (now - t0) / 4000) : 0, now / 1000, run); requestAnimationFrame(frame); };
