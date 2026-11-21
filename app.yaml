@@ -1,0 +1,19 @@
+kind: wasmer.io/App.v0
+name: odyssey
+owner: raisyatulalya6
+package: .
+app_id: da_2OPIqt7Upm63
+
+capabilities:
+  database:
+    engine: mysql
+env:
+  APP_NAME: Oddesey
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_URL: https://odyssey.wasmer.app
+  LOG_CHANNEL: stderr
+  SESSION_DRIVER: database
+  CACHE_STORE: database
+  CONTACT_EMAIL: raisyatulalya24@gmail.com
+  
